@@ -3,16 +3,17 @@ dotenv.config();
 const { MongoClient } = require('mongodb');
 
 let database;
+let client;
 
 const initDatabase = async () => {
   if (database) return database;
   try {
-    const client = await MongoClient.connect(process.env.MONGODB_URI);
+    client = await MongoClient.connect(process.env.MONGODB_URI, {});
     database = client.db();
-    console.log('Connected to MongoDB');
+    // console.log('Connected to MongoDB');
     return database;
   } catch (error) {
-    console.error('Failed to connect to MongoDB', error);
+    console.error('Failed to connect to MongoDB:', error);
     throw error;
   }
 };

@@ -1,30 +1,46 @@
 const express = require('express');
+const passport = require('passport');
 const router = express.Router();
-
-router.use('/actors', require('./actors'));
-router.use('/directors', require('./directors'));
-router.use('/genres', require('./genres'));
-router.use('/movies', require('./movies'));
+const { isAuthenticated } = require('../middleware/authenticate');
 
 router.get('/', (req, res) => {
-    //#swagger.tags = ['Welcome to the Library API']
     try {
-        res.send('<h1>Welcome to the Library API</h1><p>Use the /books endpoint to manage books collection.</p><p>Use the /customers endpoint to manage customers collection.</p>');
-        res.status(200);
+        const user = req.session.user; 
+
+        if (user) {
+            res.send(`
+                <h1>Welcome, ${user.displayName || user.username}!</h1>`);
+        } else {
+            res.send(`
+                <h1>You’re not signed in.</h1>                
+            `);
+        }
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-       
 });
 
-router.get('/login', passport.authenticate('github'), (req, res) => {});
 
-router.get('/logout', (req, res, next) => {
-    req.lo(function(err) {
-        if(err){ return next(err); }
-        res.redirect('/');
+router.get('/login', passport.authenticate('github'));
+
+router.get('/logout', (req, res, next) => {  
+  req.logout(err => {
+    if (err) return next(err);  
+    req.session.destroy(() => { 
+      res.clearCookie('connect.sid', {
+        path: '/', 
+        httpOnly: true, 
+        sameSite: 'lax'
+      });    
+      res.redirect('/');
     });
+  });
 });
+
+router.use('/actors', isAuthenticated, require('./actors'));
+// router.use('/directors', require('./directors'));
+// router.use('/genres', require('./genres'));
+// router.use('/movies', require('./movies'));
 
 
 module.exports = router;

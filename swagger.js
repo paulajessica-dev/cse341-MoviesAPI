@@ -5,7 +5,7 @@ const doc = {
     title: 'Movies API',
     description: 'API for managing movies'
   },
-  host: 'localhost:5000',
+  host: 'localhost:3000',
   schemes: ['http'],
 };
 

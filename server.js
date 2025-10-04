@@ -1,67 +1,50 @@
-// Required modules
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const mongodb = require('./database/database');
 const passport = require('passport');
 const session = require('express-session');
 const GitHubStrategy = require('passport-github2').Strategy;
+const routes = require('./routes');
+const { initDatabase } = require('./database/database');
 
+dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
+
 
 app.use(bodyParser.json());
 app.use(session({
-    secret: 'secret',
+    secret: process.env.SESSION_SECRET || 'secret',
     resave: false,
     saveUninitialized: true,
+    cookie: { httpOnly: true, sameSite: 'lax' }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
 }));
 
-app.use(passport.initialize());
 
-app.use(passport.session());
-
-app.use((req,res,next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Origin, X-Requested-With, Content-type, Accept, Z-Key, Authorization'
-    );
-    res.setHeader(
-        'Access-Control-Allow-Methods', 
-        'GET,POST,PUT,DELETE,OPTIONS');
-    next();
-});
-
-app.use(cors({ methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH']}));
-app.use(cors({ origin: '*'}));
-
-app.use('/', require('./routes'));
 
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_SECRET_ID,
     callbackURL: process.env.CALLBACK_URL
-},
-function(accessToken, refreshToken, profile, done){
-    //User.findOrCreate({ gitHubId: profile.Id }, function (err, user) {
-    return done(null, profile)
-//})
-}
-));
+}, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}));
 
-passport.serializeUser((user, done) => {
-    done(null.user);
-});
-passport.deserializeUser((user, done) => {
-    done(null.user);
-});
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
 
-app.get('/', (req, res) => { res.send(req.session.user !== undefined ? `Logged in as ${req.session.user.displayName}` : 'Logged Out')});
-app.get('/github/callback', passport.authenticate('github', {
-    failureRedirect: '/api-docs', session: false}),
+app.use('/', routes);
+
+app.get('/github/callback',
+    passport.authenticate('github', { failureRedirect: '/'}),
     (req, res) => {
         req.session.user = req.user;
         res.redirect('/');
@@ -70,17 +53,18 @@ app.get('/github/callback', passport.authenticate('github', {
 
 
 process.on('uncaughtException', (err, origin) => {
-  console.error('Unhandled exception:', err);
-  console.error('Origin:', origin);
-  process.exit(1); 
+    console.error('Unhandled exception:', err);
+    console.error('Origin:', origin);
 });
 
-mongodb.initDatabase((err) => {
-    if (err) {
-        console.log(err);
-    } else {
-        app.listen(port, () => {
-            console.log(`Database is connected and listening on port ${port}`);
-        });
+
+app.listen(port, async () => {
+    console.log(`Server running on http://localhost:${port}`);
+
+    try {
+        await initDatabase();
+        console.log('Database connected');
+    } catch (err) {
+        console.error('Could not connect to DB. Running without DB.');
     }
 });

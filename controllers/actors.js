@@ -1,16 +1,17 @@
-const mongodb = require('./database/database');
+const mongodb = require('../database/database');
 const { ObjectId } = require('mongodb');
+const { getNextSequence } = require('../helper/helper');
 
 const getAll = async (req, res) => {
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('actors').find();
-        result.toArray().then((actors) => {
+        const result = await database.collection('Actors').find();
+        result.toArray().then((Actors) => {
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json(actors);
+            res.status(200).json(Actors);
         });
     } catch (err) {
-            res.status(500).json(result.error || 'Some error occurred while retrieving the actors.');
+            res.status(500).json(err.message || 'Some error occurred while retrieving the actors.');
     }
     
 };   
@@ -19,13 +20,13 @@ const getById = async (req, res) => {
     try {
         const actorId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
-        const result = await database.collection('actors').find({_id: actorId});
-        result.toArray().then((actors) => {
+        const result = await database.collection('Actors').find({_id: actorId});
+        result.toArray().then((Actors) => {
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json(actors[0]);
+            res.status(200).json(Actors[0]);
         });
     } catch (err) {
-        res.status(500).json(result.error || 'Some error occurred while retrieving the actor.');
+        res.status(500).json(err.message || 'Some error occurred while retrieving the actor.');
     }  
 };
 
@@ -33,33 +34,40 @@ const getByField = async (req, res) => {//We can filter by any field with this s
     console.log(req.query);
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('actors').find(req.query);  
-        result.toArray().then((actors) => {
+        const result = await database.collection('Actors').find(req.query);  
+        result.toArray().then((Actors) => {
             res.setHeader('Content-Type', 'application/json');
-            res.status(200).json(actors);
+            res.status(200).json(Actors);
         }); 
     } catch (err) {
-        res.status(500).json(result.error || 'Some error occurred while retrieving the actor.');
+        res.status(500).json(err.message || 'Some error occurred while retrieving the actor.');
     }  
 }
 
 //CRUD Operations
 const createActor = async (req, res) => {
     //#swagger.tags = ['Actors']
-    const newActor = {
-        fistName: req.body.fistName,
-        lasName: req.body.lastName, 
-        birthdate: req.body.birthdate, //MM/DD/YYYY
-        nationality: req.body.nationality
-    };
     try {
-        const database = await mongodb.getDatabase();
-        const result = await database.collection('actors').insertOne(newActor);
-        if (result.acknowledged !== 1) {
-            res.status(201).json(result.insertedId);
-        } 
+        const database = await mongodb.getDatabase();        
+        const nextId = await getNextSequence(database, 'Actors');
+        const newActor = {
+            actorId: nextId,  
+            firstName: req.body.fistName,
+            lastName: req.body.lastName, 
+            birthdate: req.body.birthdate, 
+            nationality: req.body.nationality
+        };
+
+        const result = await database.collection('Actors').insertOne(newActor);
+
+        if (result.acknowledged === true) {
+            res.status(201).json({ insertedId: result.insertedId });
+        } else {
+            res.status(500).json('Error inserting actor.');
+        }
+
     } catch (err) {
-        res.status(500).json(result.error || 'Some error occurred while creating the actor.');
+        res.status(500).json(err.message || 'Some error occurred while creating the actor.');
     } 
 };
 
@@ -67,8 +75,8 @@ const updateActor = async (req, res) => {
     //#swagger.tags = ['Actors']
     const actorId = new ObjectId(req.params.id);
     const updatedActor = {
-        fistName: req.body.fistName,
-        lasName: req.body.lastName, 
+        firstName: req.body.fistName,
+        lastName: req.body.lastName, 
         birthdate: req.body.birthdate, //MM/DD/YYYY
         nationality: req.body.nationality
     };
@@ -81,7 +89,7 @@ const updateActor = async (req, res) => {
             res.status(204).end();
         }
     } catch (err) {
-        res.status(500).json(result.error || 'Some error occurred while updating the actor.');
+        res.status(500).json(err.message || 'Some error occurred while updating the actor.');
     }
 };
     
@@ -97,7 +105,7 @@ const removeActor = async (req, res) => {
             res.status(204).end();
         }
     } catch (err) {
-        res.status(500).json(result.error || 'Some error occurred while deleting the actor.'); 
+        res.status(500).json(err.message || 'Some error occurred while deleting the actor.'); 
     }
 };
 
@@ -111,3 +119,5 @@ module.exports = {
     updateActor,
     removeActor
 };
+
+

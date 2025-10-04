@@ -7,6 +7,9 @@ const session = require('express-session');
 const GitHubStrategy = require('passport-github2').Strategy;
 const routes = require('./routes');
 const { initDatabase } = require('./database/database');
+const setupSwagger = require('./swagger');
+setupSwagger(app);
+
 
 dotenv.config();
 

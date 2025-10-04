@@ -10,23 +10,6 @@ router.use('/actors', isAuthenticated, require('./actors'));
 // router.use('/genres', require('./genres'));
 // router.use('/movies', require('./movies'));
 
-// router.get('/login', (req, res) => {
-//     try {
-//         const user = req.session.user; 
-
-//         if (user) {
-//             res.send(`
-//                 <h1>Welcome, ${user.displayName || user.username}!</h1>`);
-//         } else {
-//             res.send(`
-//                 <h1>You’re not signed in.</h1>                
-//             `);
-//         }
-//     } catch (error) {
-//         res.status(500).json({ message: error.message });
-//     }
-// });
-
 
 router.get('/login', passport.authenticate('github'));
 

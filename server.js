@@ -7,7 +7,6 @@ const session = require('express-session');
 const GitHubStrategy = require('passport-github2').Strategy;
 const routes = require('./routes');
 const { initDatabase } = require('./database/database');
-const swaggerRoutes = require('./routes/swagger');
 const swaggerUi = require('swagger-ui-express');
 
 
@@ -31,7 +30,7 @@ app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
 }));
-
+app.use('/', require('./routes/index'));
 
 
 passport.use(new GitHubStrategy({
@@ -45,8 +44,14 @@ passport.use(new GitHubStrategy({
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
-app.use('/', routes);
 
+routes.get('/', (req, res) => {
+    const user = req.session.user;
+    res.send(user 
+        ? `Logged in as ${user.displayName || user.username}` 
+        : 'Logged Out'
+    );
+});
 app.get('/github/callback',
     passport.authenticate('github', { failureRedirect: '/api-docs'}),
     (req, res) => {
@@ -61,7 +66,7 @@ process.on('uncaughtException', (err, origin) => {
     console.error('Origin:', origin);
 });
 
-app.use('/', swaggerRoutes);
+
 app.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}`);
 

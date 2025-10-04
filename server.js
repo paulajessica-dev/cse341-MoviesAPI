@@ -8,6 +8,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const routes = require('./routes');
 const { initDatabase } = require('./database/database');
 const swaggerUi = require('swagger-ui-express');
+const setupSwagger = require('./swagger');
 
 
 
@@ -59,7 +60,7 @@ app.get('/github/callback',
         res.redirect('/');
     }
 );
-
+setupSwagger(app);
 
 process.on('uncaughtException', (err, origin) => {
     console.error('Unhandled exception:', err);

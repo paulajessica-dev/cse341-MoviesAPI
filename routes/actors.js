@@ -8,18 +8,18 @@ const { isAuthenticated } = require('../middleware/authenticate');
  * @swagger
  * tags:
  *   name: Actors
- *   description: Endpoints para gerenciar atores
+ *   description: Endpoints to manager actors
  */
 
 /**
  * @swagger
  * /actors:
  *   get:
- *     summary: Lista todos os atores
+ *     summary: get all actors
  *     tags: [Actors]
  *     responses:
  *       200:
- *         description: Lista de atores
+ *         description: actors list
  */
 
 //routes

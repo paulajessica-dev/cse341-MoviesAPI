@@ -11,12 +11,20 @@ const options = {
       description: 'API for managing movies',
     },
   },
-  apis: ['./routes/*.js'], // caminhos para os arquivos de rotas com comentários Swagger
+  apis: ['./routes/*.js'], 
 };
 
 const specs = swaggerJsdoc(options); 
 function setupSwagger(app) {
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+  app.use('/api-docs', 
+        swaggerUi.serve, 
+        swaggerUi.setup(specs, {
+        swaggerOptions: {
+        withCredentials: true, 
+      },
+    })
+  );
 }
+
 
 module.exports = setupSwagger;

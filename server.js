@@ -7,8 +7,9 @@ const session = require('express-session');
 const GitHubStrategy = require('passport-github2').Strategy;
 const routes = require('./routes');
 const { initDatabase } = require('./database/database');
-const setupSwagger = require('./swagger');
-setupSwagger(app);
+const swaggerRoutes = require('./routes/swagger');
+const swaggerUi = require('swagger-ui-express');
+
 
 
 dotenv.config();
@@ -60,7 +61,7 @@ process.on('uncaughtException', (err, origin) => {
     console.error('Origin:', origin);
 });
 
-
+app.use('/', swaggerRoutes);
 app.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}`);
 

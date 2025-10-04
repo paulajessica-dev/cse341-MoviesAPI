@@ -1,18 +1,22 @@
 const swaggerAutogen = require('swagger-autogen')();
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
 
-const doc = {
-  info: {
-    title: 'Movies API',
-    description: 'API for managing movies'
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Movies API',
+      description: 'API for managing movies',
+    },
   },
-  host: 'localhost:3000',
-  schemes: ['http'],
+  apis: ['./routes/*.js'], // caminhos para os arquivos de rotas com comentários Swagger
 };
 
-const outputFile = './swagger.json'; // Output file for the generated Swagger documentation should be created in the root directory EMPTY
-const routes = ['./routes/index.js'];
+const specs = swaggerJsdoc(options); 
+function setupSwagger(app) {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+}
 
-/* NOTE: If you are using the express Router, you must pass in the 'routes' only the 
-root file where the route starts, such as index.js, app.js, routes.js, etc ... */
-
-swaggerAutogen(outputFile, routes, doc);
+module.exports = setupSwagger;

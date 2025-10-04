@@ -44,7 +44,7 @@ passport.deserializeUser((user, done) => done(null, user));
 app.use('/', routes);
 
 app.get('/github/callback',
-    passport.authenticate('github', { failureRedirect: '/'}),
+    passport.authenticate('github', { failureRedirect: '/api-docs'}),
     (req, res) => {
         req.session.user = req.user;
         res.redirect('/');

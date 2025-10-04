@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 //controller
 const moviesController =  require('../controllers/movies');
+const { isAuthenticated } = require('../middleware/authenticate');
 
 //routes
 router.get('/', moviesController.getAll);
@@ -12,8 +13,8 @@ router.get('/findByDirector', moviesController.getByField);
 router.get('/:id', moviesController.getById);
 
 //CRUD
-router.post('/', moviesController.createMovie);
-router.put('/:id', moviesController.updateMovie);
-router.delete('/:id', moviesController.removeMovie);
+router.post('/', isAuthenticated, moviesController.createMovie);
+router.put('/:id', isAuthenticated, moviesController.updateMovie);
+router.delete('/:id', isAuthenticated, moviesController.removeMovie);
 
 module.exports = router;

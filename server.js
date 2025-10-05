@@ -30,6 +30,7 @@ app.use(passport.session());
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
+    credentials: true
 }));
 app.use('/', require('./routes/index'));
 

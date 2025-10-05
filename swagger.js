@@ -14,7 +14,7 @@ const options = {
       { url: 'https://cse341-moviesapi-ezae.onrender.com' } 
     ]
   },
-  apis: ['./routes/*.js'], 
+  apis: ['./routes/index.js'], 
 };
 
 const specs = swaggerJsdoc(options); 

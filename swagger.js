@@ -11,7 +11,7 @@ const options = {
       description: 'API for managing movies',
     },
   },
-  apis: ['./routes/*.js'], 
+  apis: ['https://cse341-moviesapi-ezae.onrender.com'], 
 };
 
 const specs = swaggerJsdoc(options); 

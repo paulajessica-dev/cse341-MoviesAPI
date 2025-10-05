@@ -1,10 +1,10 @@
 const mongodb = require('../database/database');
 const { ObjectId } = require('mongodb');
 
-const getAll = async (req, res) => {
+const getAllGenres = async (req, res) => {
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('genres').find();
+        const result = await database.collection('Genres').find();
         result.toArray().then((genres) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(genres);
@@ -15,11 +15,11 @@ const getAll = async (req, res) => {
     
 };   
 
-const getById = async (req, res) => {
+const getGenreById = async (req, res) => {
     try {
         const genreId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
-        const result = await database.collection('genres').find({_id: genreId});
+        const result = await database.collection('Genres').find({_id: genreId});
         result.toArray().then((genres) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(genres[0]);
@@ -29,11 +29,11 @@ const getById = async (req, res) => {
     }  
 };
 
-const getByField = async (req, res) => {//We can filter by any field with this same fuction
+const getGenreByField = async (req, res) => {//We can filter by any field with this same fuction
     console.log(req.query);
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('genres').find(req.query);  
+        const result = await database.collection('Genres').find(req.query);  
         result.toArray().then((genres) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(genres);
@@ -52,7 +52,7 @@ const createGenre = async (req, res) => {
     };
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('genres').insertOne(newGenre);
+        const result = await database.collection('Genres').insertOne(newGenre);
         if (result.acknowledged !== 1) {
             res.status(201).json(result.insertedId);
         } 
@@ -70,7 +70,7 @@ const updateGenre = async (req, res) => {
     };
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('genres').updateOne({_id: genreId}, {$set: updatedGenre});
+        const result = await database.collection('Genres').updateOne({_id: genreId}, {$set: updatedGenre});
         if (result.modifiedCount !== 1) {
             throw err;
         } else {
@@ -86,7 +86,7 @@ const removeGenre = async (req, res) => {
     try {
         const genreId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
-        const result = await database.collection('genres').deleteOne({_id: genreId});
+        const result = await database.collection('Genres').deleteOne({_id: genreId});
         if (result.deletedCount !== 1) {
             throw err;
         } else {
@@ -100,9 +100,9 @@ const removeGenre = async (req, res) => {
 
 //Exports
 module.exports = { 
-    getAll,
-    getById,
-    getByField,
+    getAllGenres,
+    getGenreById,
+    getGenreByField,
     createGenre,
     updateGenre,
     removeGenre

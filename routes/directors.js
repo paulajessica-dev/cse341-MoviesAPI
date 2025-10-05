@@ -5,8 +5,8 @@ const directorsController =  require('../controllers/directors');
 const { isAuthenticated } = require('../middleware/authenticate');
 
 //routes
-router.get('/', directorsController.getAll);
-router.get('/:id', directorsController.getById);
+router.get('/', directorsController.getAllDirectors);
+router.get('/:id', directorsController.getDirectorById);
 
 //CRUD
 router.post('/', isAuthenticated, directorsController.createDirector);

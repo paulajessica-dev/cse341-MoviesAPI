@@ -2,7 +2,7 @@ const mongodb = require('../database/database');
 const { ObjectId } = require('mongodb');
 const { getNextSequence } = require('../helper/helper');
 
-const getAll = async (req, res) => {
+const getAllActors = async (req, res) => {
     try {
         const database = await mongodb.getDatabase();
         const result = await database.collection('Actors').find();
@@ -16,7 +16,7 @@ const getAll = async (req, res) => {
     
 };   
 
-const getById = async (req, res) => {
+const getActorById = async (req, res) => {
     try {
         const actorId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
@@ -82,7 +82,7 @@ const updateActor = async (req, res) => {
     };
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('actors').updateOne({_id: actorId}, {$set: updatedActor});
+        const result = await database.collection('Actors').updateOne({_id: actorId}, {$set: updatedActor});
         if (result.modifiedCount !== 1) {
             throw err;
         } else {
@@ -98,7 +98,7 @@ const removeActor = async (req, res) => {
     try {
         const actorId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
-        const result = await database.collection('actors').deleteOne({_id: actorId});
+        const result = await database.collection('Actors').deleteOne({_id: actorId});
         if (result.deletedCount !== 1) {
             throw err;
         } else {
@@ -112,8 +112,8 @@ const removeActor = async (req, res) => {
 
 //Exports
 module.exports = { 
-    getAll,
-    getById,
+    getAllActors,
+    getActorById,
     getByField,
     createActor,
     updateActor,

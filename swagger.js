@@ -1,4 +1,4 @@
-const swaggerAutogen = require('swagger-autogen')();
+// const swaggerAutogen = require('swagger-autogen')();
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 

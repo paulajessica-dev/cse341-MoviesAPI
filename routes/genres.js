@@ -5,8 +5,8 @@ const genresController =  require('../controllers/genres');
 const { isAuthenticated } = require('../middleware/authenticate');
 
 //routes
-router.get('/', genresController.getAll);
-router.get('/:id', genresController.getById);
+router.get('/', genresController.getAllGenres);
+router.get('/:id', genresController.getGenreById);
 
 //CRUD
 router.post('/', isAuthenticated, genresController.createGenre);

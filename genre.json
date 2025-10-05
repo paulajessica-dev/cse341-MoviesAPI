@@ -1,0 +1,7 @@
+[
+  { "name": "Action", "description": "High energy, fights, stunts, and chases." },
+  { "name": "Drama", "description": "Emotional storytelling with realistic characters." },
+  { "name": "Comedy", "description": "Humorous and lighthearted films." },
+  { "name": "Horror", "description": "Scary films designed to frighten or disturb." },
+  { "name": "Sci-Fi", "description": "Science fiction exploring futuristic concepts." }
+]

@@ -23,8 +23,8 @@ const { isAuthenticated } = require('../middleware/authenticate');
  */
 
 //routes
-router.get('/', actorsController.getAll);
-router.get('/:id', actorsController.getById);
+router.get('/', actorsController.getAllActors);
+router.get('/:id', actorsController.getActorById);
 
 //CRUD
 router.post('/', isAuthenticated, actorsController.createActor);

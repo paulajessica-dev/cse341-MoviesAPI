@@ -1,10 +1,10 @@
 const mongodb = require('../database/database');
 const { ObjectId } = require('mongodb');
 
-const getAll = async (req, res) => {
+const getAllMovies = async (req, res) => {
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('movies').find();
+        const result = await database.collection('Movies').find();
         result.toArray().then((movies) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(movies);
@@ -15,11 +15,11 @@ const getAll = async (req, res) => {
     
 };   
 
-const getById = async (req, res) => {
+const getMovieById = async (req, res) => {
     try {
         const movieId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
-        const result = await database.collection('movies').find({_id: movieId});
+        const result = await database.collection('Movies').find({_id: movieId});
         result.toArray().then((movies) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(movies[0]);
@@ -29,11 +29,11 @@ const getById = async (req, res) => {
     }  
 };
 
-const getByField = async (req, res) => {//We can filter by any field with this same fuction
+const getMovieByField = async (req, res) => {//We can filter by any field with this same fuction
     console.log(req.query);
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('movies').find(req.query);  
+        const result = await database.collection('Movies').find(req.query);  
         result.toArray().then((movies) => {
             res.setHeader('Content-Type', 'application/json');
             res.status(200).json(movies);
@@ -58,7 +58,7 @@ const createMovie = async (req, res) => {
     };
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('movies').insertOne(newMovie);
+        const result = await database.collection('Movies').insertOne(newMovie);
         if (result.acknowledged !== 1) {
             res.status(201).json(result.insertedId);
         } 
@@ -82,7 +82,7 @@ const updateMovie = async (req, res) => {
     };
     try {
         const database = await mongodb.getDatabase();
-        const result = await database.collection('movies').updateOne({_id: movieId}, {$set: updatedMovie});
+        const result = await database.collection('Movies').updateOne({_id: movieId}, {$set: updatedMovie});
         if (result.modifiedCount !== 1) {
             throw err;
         } else {
@@ -98,7 +98,7 @@ const removeMovie = async (req, res) => {
     try {
         const movieId = new ObjectId(req.params.id);
         const database = await mongodb.getDatabase();
-        const result = await database.collection('movies').deleteOne({_id: movieId});
+        const result = await database.collection('Movies').deleteOne({_id: movieId});
         if (result.deletedCount !== 1) {
             throw err;
         } else {
@@ -112,9 +112,9 @@ const removeMovie = async (req, res) => {
 
 //Exports
 module.exports = { 
-    getAll,
-    getById,
-    getByField,
+    getAllMovies,
+    getMovieById,
+    getMovieByField,
     createMovie,
     updateMovie,
     removeMovie

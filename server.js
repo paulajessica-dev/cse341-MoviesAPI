@@ -8,7 +8,7 @@ const GitHubStrategy = require('passport-github2').Strategy;
 const routes = require('./routes');
 const { initDatabase } = require('./database/database');
 const swaggerUi = require('swagger-ui-express');
-const setupSwagger = require('./swagger');
+const setupSwagger = require('./swagger')
 
 
 
@@ -20,19 +20,35 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'secret',
+    secret: process.env.SESSION_SECRET || 'supersecret',
     resave: false,
-    saveUninitialized: true,
-    cookie: { httpOnly: true, sameSite: 'lax' }
+    saveUninitialized: false,
+    cookie: { 
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false // true if you’re using HTTPS
+    }
+}));
+app.use(cors({
+    // origin: '*',
+    // methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
+    origin: 'http://localhost:5000',
+    credentials: true
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'DELETE', 'PUT', 'PATCH', 'OPTIONS'],
-    credentials: true
-}));
 app.use('/', require('./routes/index'));
+app.use('/actors', require('./routes/actors'));
+app.use('/directors', require('./routes/directors'));
+app.use('/genres', require('./routes/genres'));
+app.use('/movies', require('./routes/movies'))
+
+// For testing purpose only
+console.log({
+  clientID: process.env.GITHUB_CLIENT_ID,
+  clientSecret: process.env.GITHUB_SECRET_ID,
+  callbackURL: process.env.CALLBACK_URL
+});
 
 
 passport.use(new GitHubStrategy({
@@ -40,7 +56,7 @@ passport.use(new GitHubStrategy({
     clientSecret: process.env.GITHUB_SECRET_ID,
     callbackURL: process.env.CALLBACK_URL
 }, (accessToken, refreshToken, profile, done) => {
-    return done(null, profile);
+    return done(null, profile)
 }));
 
 passport.serializeUser((user, done) => done(null, user));
@@ -54,11 +70,15 @@ routes.get('/', (req, res) => {
         : 'Logged Out'
     );
 });
-app.get('/github/callback',
+// Start GitHub authentication
+app.get('/auth/github',
+  passport.authenticate('github', { scope: [ 'user:email' ] })
+);
+app.get('/auth/github/callback',
     passport.authenticate('github', { failureRedirect: '/api-docs'}),
     (req, res) => {
         req.session.user = req.user;
-        res.redirect('/');
+        res.redirect('/')
     }
 );
 setupSwagger(app);

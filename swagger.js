@@ -10,9 +10,6 @@ const options = {
       title: 'Movies API',
       description: 'API for managing movies',
     },
-    servers: [
-      { url: 'https://cse341-moviesapi-ezae.onrender.com' } 
-    ]
   },
   apis: ['./routes/*.js'], 
 };
